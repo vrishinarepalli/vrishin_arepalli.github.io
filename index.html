@@ -1,232 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vrishina Repalli</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Basketball Tournament</title>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --panel: #111827;
+      --muted: #a3adc2;
+      --text: #e7ecf6;
+      --brand: #ff9d00; /* accent / highlight */
+      --brand-2: #4f46e5; /* secondary accent */
+      --ring: rgba(255,157,0,0.35);
+      --border: #1f2937;
+      --card: #0f1524;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
 
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.8;
-            color: #1a1a1a;
-            background: #ffffff;
-        }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 800px at 10% 0%, #0d1324, #090d18 60%), var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.6;
+    }
 
-        header {
-            border-bottom: 1px solid #e0e0e0;
-            padding: 2rem 0;
-            background: #ffffff;
-        }
+    /* Page shell */
+    .wrap {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+    header.site {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(180deg, #0f162a 0%, #0b1020 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky; top: 12px; z-index: 50;
+    }
+    .logo {
+      width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center;
+      background:
+        radial-gradient(70% 90% at 60% 20%, rgba(255,255,255,0.08), transparent 60%),
+        linear-gradient(135deg, #111b35, #0a0f20);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .logo:before {
+      content: ""; position: absolute; inset: -20% -40% auto auto; rotate: 35deg;
+      width: 120%; height: 70%;
+      background: linear-gradient(90deg, rgba(255,255,255,.06), transparent);
+    }
+    .logo svg { width: 30px; height: 30px; }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .title h1 { margin: 0; font-size: clamp(1.15rem, 1rem + 1vw, 1.6rem); letter-spacing: .3px; }
+    .title p { margin: .1rem 0 0; color: var(--muted); font-size: .9rem; }
 
-        .logo {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            text-decoration: none;
-        }
+    .meta {
+      display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;
+    }
+    .chip { font-size: .8rem; color: #0b0f1a; background: var(--brand); padding: .3rem .6rem; border-radius: 999px; font-weight: 700; }
+    .chip.alt { background: #222b44; color: var(--text); border: 1px solid var(--border); }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
+    /* Tabs */
+    .tabs {
+      margin-top: 1rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .tablist {
+      display: flex;
+      gap: .25rem; flex-wrap: wrap;
+      padding: .5rem; background: #0d1426; border-bottom: 1px solid var(--border);
+    }
+    .tablist button {
+      appearance: none; border: 1px solid var(--border); background: #0f172a; color: var(--text);
+      padding: .6rem .9rem; border-radius: 12px; font-weight: 600; letter-spacing: .2px; cursor: pointer;
+      transition: transform .06s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .tablist button[aria-selected="true"], .tablist button:focus-visible {
+      outline: none; border-color: var(--brand);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+    .tablist button[aria-selected="true"] { background: linear-gradient(180deg, #0f1732, #0a1024); }
 
-        .nav-links a {
-            color: #4a4a4a;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
+    .tabpanel { display: none; padding: 1.25rem; }
+    .tabpanel.active { display: block; }
 
-        .nav-links a:hover {
-            color: #1a1a1a;
-        }
+    /* Section: Schedule */
+    .controls { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; }
+    .input, .select {
+      background: #0a1122; color: var(--text); border: 1px solid var(--border);
+      padding: .55rem .7rem; border-radius: 10px; min-width: 200px;
+    }
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    thead th {
+      position: sticky; top: 0; z-index: 1; background: #0d1426;
+      text-align: left; font-size: .9rem; color: var(--muted);
+      border-bottom: 1px solid var(--border); padding: .75rem .9rem;
+    }
+    tbody td { padding: .85rem .9rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    .badge { font-size: .75rem; padding: .25rem .5rem; border-radius: 999px; border: 1px solid var(--border); background: #0b1224; }
 
-        main {
-            padding: 4rem 0;
-        }
+    /* Section: Teams */
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr); }
+    .team-card {
+      grid-column: span 12;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: .9rem; display: flex; gap: .9rem; align-items: center;
+    }
+    @media (min-width: 600px) { .team-card { grid-column: span 6; } }
+    @media (min-width: 900px) { .team-card { grid-column: span 4; } }
+    .avatar { width: 46px; height: 46px; border-radius: 12px; background: #0e1833; display: grid; place-items: center; border: 1px solid var(--border); }
+    .team-card h4 { margin: 0; font-size: 1rem; }
+    .team-card p { margin: .25rem 0 0; color: var(--muted); font-size: .9rem; }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 400;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-        }
+    /* Section: FAQ */
+    .faq { max-width: 900px; margin-inline: auto; }
+    details {
+      border: 1px solid var(--border); border-radius: 12px; background: #0c1226; padding: .9rem 1rem; margin: .6rem 0; transition: background .2s ease;
+    }
+    details[open] { background: #0e1733; }
+    summary { cursor: pointer; font-weight: 700; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    details p { margin: .6rem 0 0; color: var(--muted); }
 
-        .intro {
-            font-size: 1.15rem;
-            color: #4a4a4a;
-            margin-bottom: 3rem;
-            max-width: 700px;
-        }
+    /* Footer */
+    footer { text-align: center; color: var(--muted); font-size: .85rem; margin: 1.25rem 0 3rem; }
 
-        section {
-            margin-bottom: 4rem;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            color: #1a1a1a;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 0.5rem;
-        }
-
-        .project {
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .project:last-child {
-            border-bottom: none;
-        }
-
-        .project h3 {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
-        }
-
-        .project p {
-            color: #4a4a4a;
-            margin-bottom: 0.5rem;
-        }
-
-        .project-link {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 0.95rem;
-        }
-
-        .project-link:hover {
-            text-decoration: underline;
-        }
-
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .skill {
-            padding: 0.5rem 1rem;
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            color: #4a4a4a;
-        }
-
-        footer {
-            border-top: 1px solid #e0e0e0;
-            padding: 2rem 0;
-            margin-top: 4rem;
-            text-align: center;
-            color: #6a6a6a;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-            }
-
-            .container {
-                padding: 0 1.5rem;
-            }
-        }
-    </style>
+    /* Utility */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .pill { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .55rem; background: #0b1224; border: 1px solid var(--border); border-radius: 999px; font-size: .8rem; color: var(--muted); }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <a href="#" class="logo">Vrishina Repalli</a>
-                <ul class="nav-links">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
+  <div class="wrap">
+    <header class="site" role="banner">
+      <div class="logo" aria-hidden="true">
+        <!-- Minimal basketball mark -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="url(#g)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffb347" />
+              <stop offset="1" stop-color="#ff9d00" />
+            </linearGradient>
+          </defs>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 2.6 3.7 5.7 3.7 9S14.5 18.4 12 21M12 3c-2.5 2.6-3.7 5.7-3.7 9s1.2 6.4 3.7 9" />
+        </svg>
+      </div>
+      <div class="title">
+        <h1>City Classic Basketball Tournament</h1>
+        <p>Bracket weekend • Rec Center Court A &amp; B</p>
+      </div>
+      <div class="meta">
+        <span class="chip" title="Event status">LIVE</span>
+        <span class="chip alt pill" title="Tap to copy" id="copyLink">tourney.example/2025</span>
+      </div>
     </header>
 
-    <main class="container">
-        <section id="about">
-            <h1>Vrishina Repalli</h1>
-            <p class="intro">Computer Science student with experience in systems programming, C/C++, and UNIX environments. Currently focused on low-level programming and building efficient software systems.</p>
-        </section>
+    <main class="tabs" role="main">
+      <!-- Tablist -->
+      <div class="tablist" role="tablist" aria-label="Tournament sections">
+        <button role="tab" id="tab-schedule" aria-selected="true" aria-controls="panel-schedule">Schedule</button>
+        <button role="tab" id="tab-teams" aria-selected="false" aria-controls="panel-teams">Teams</button>
+        <button role="tab" id="tab-faq" aria-selected="false" aria-controls="panel-faq">FAQ</button>
+      </div>
 
-        <section id="projects">
-            <h2>Projects</h2>
-            
-            <div class="project">
-                <h3>Project Title</h3>
-                <p>Brief description of the project, technologies used, and key accomplishments or features implemented.</p>
-                <a href="#" class="project-link">View Project →</a>
+      <!-- Panels -->
+      <section id="panel-schedule" class="tabpanel active" role="tabpanel" aria-labelledby="tab-schedule">
+        <div class="controls">
+          <input id="search" class="input" type="search" placeholder="Search team or court…" aria-label="Search schedule" />
+          <select id="dayFilter" class="select" aria-label="Filter by day">
+            <option value="">All days</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+          </select>
+          <select id="courtFilter" class="select" aria-label="Filter by court">
+            <option value="">All courts</option>
+            <option>Court A</option>
+            <option>Court B</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table id="scheduleTable" aria-describedby="scheduleCaption">
+            <caption id="scheduleCaption" class="sr-only">Tournament game schedule</caption>
+            <thead>
+              <tr>
+                <th scope="col">Day</th>
+                <th scope="col">Time</th>
+                <th scope="col">Matchup</th>
+                <th scope="col">Court</th>
+                <th scope="col">Round</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Sample rows; replace with your data -->
+              <tr>
+                <td>Friday</td>
+                <td>6:00 PM</td>
+                <td>Mutts &amp; Fulls vs BBB</td>
+                <td>Court A</td>
+                <td>Round of 16</td>
+                <td><span class="badge">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td>7:00 PM</td>
+                <td>Rajesh's Last Dance vs Club Ballers</td>
+                <td>Court B</td>
+                <td>Round of 16</td>
+                <td><span class="badge">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td>Saturday</td>
+                <td>2:00 PM</td>
+                <td>Nav/Sandeep vs KOS</td>
+                <td>Court A</td>
+                <td>Quarterfinal</td>
+                <td><span class="badge">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td>Saturday</td>
+                <td>3:00 PM</td>
+                <td>LeMickey vs BBS</td>
+                <td>Court B</td>
+                <td>Quarterfinal</td>
+                <td><span class="badge">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td>Sunday</td>
+                <td>12:00 PM</td>
+                <td>Semifinal 1</td>
+                <td>Court A</td>
+                <td>Semifinal</td>
+                <td><span class="badge">TBD</span></td>
+              </tr>
+              <tr>
+                <td>Sunday</td>
+                <td>1:00 PM</td>
+                <td>Semifinal 2</td>
+                <td>Court B</td>
+                <td>Semifinal</td>
+                <td><span class="badge">TBD</span></td>
+              </tr>
+              <tr>
+                <td>Sunday</td>
+                <td>3:00 PM</td>
+                <td>Championship</td>
+                <td>Court A</td>
+                <td>Final</td>
+                <td><span class="badge">TBD</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-teams" class="tabpanel" role="tabpanel" aria-labelledby="tab-teams">
+        <div class="grid" id="teamsGrid">
+          <!-- Team cards; replace or extend as needed -->
+          <article class="team-card" data-seed="1">
+            <div class="avatar" aria-hidden="true">🏀</div>
+            <div>
+              <h4>Mutts &amp; Fulls <span class="pill" title="Seed">#1</span></h4>
+              <p>Captain: Jordan • Colors: Black/Gold • Region: West</p>
             </div>
-
-            <div class="project">
-                <h3>Another Project</h3>
-                <p>Description of another project showcasing your work in systems programming or related areas.</p>
-                <a href="#" class="project-link">View Project →</a>
+          </article>
+          <article class="team-card" data-seed="2">
+            <div class="avatar" aria-hidden="true">🔥</div>
+            <div>
+              <h4>BBB <span class="pill">#2</span></h4>
+              <p>Captain: Lee • Colors: Red/White • Region: East</p>
             </div>
-
-            <div class="project">
-                <h3>Third Project</h3>
-                <p>Additional project demonstrating your technical skills and problem-solving abilities.</p>
-                <a href="#" class="project-link">View Project →</a>
+          </article>
+          <article class="team-card" data-seed="3">
+            <div class="avatar" aria-hidden="true">🛡️</div>
+            <div>
+              <h4>Rajesh's Last Dance <span class="pill">#3</span></h4>
+              <p>Captain: Raj • Colors: Navy/Silver • Region: Central</p>
             </div>
-        </section>
-
-        <section id="skills">
-            <h2>Technical Skills</h2>
-            <div class="skills">
-                <span class="skill">C</span>
-                <span class="skill">C++</span>
-                <span class="skill">UNIX/Linux</span>
-                <span class="skill">Systems Programming</span>
-                <span class="skill">Git</span>
-                <span class="skill">Terminal</span>
+          </article>
+          <article class="team-card" data-seed="4">
+            <div class="avatar" aria-hidden="true">⚡</div>
+            <div>
+              <h4>Club Ballers <span class="pill">#4</span></h4>
+              <p>Captain: Mia • Colors: Teal/Black • Region: South</p>
             </div>
-        </section>
+          </article>
+          <!-- Add more team cards as needed -->
+        </div>
+      </section>
 
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Email: your.email@example.com</p>
-            <p>GitHub: <a href="https://github.com/vrishinarepalli" class="project-link">github.com/vrishinarepalli</a></p>
-        </section>
+      <section id="panel-faq" class="tabpanel" role="tabpanel" aria-labelledby="tab-faq">
+        <div class="faq">
+          <details>
+            <summary>Where is the tournament hosted?</summary>
+            <p>All games are at the Rec Center, Courts A &amp; B. Enter through the north doors; check-in is beside the lobby desk.</p>
+          </details>
+          <details>
+            <summary>How do seeding and tiebreakers work?</summary>
+            <p>Seeding is based on pool play record, then head-to-head, then point differential (+/− 15 cap), then coin toss.</p>
+          </details>
+          <details>
+            <summary>What are roster and eligibility rules?</summary>
+            <p>Maximum 8 players per roster. All players must sign the waiver prior to first game. No mid‑bracket additions.</p>
+          </details>
+          <details>
+            <summary>What if we need to forfeit?</summary>
+            <p>Please notify the desk at least 2 hours in advance so we can adjust the schedule. No refunds after bracket release.</p>
+          </details>
+          <details>
+            <summary>Is there a livestream or score updates?</summary>
+            <p>Follow our IG @cityclassic for live clips and final scores posted after each round.</p>
+          </details>
+        </div>
+      </section>
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Vrishina Repalli</p>
-        </div>
+      © <span id="y"></span> City Classic — Questions? Email <a href="mailto:hoops@tourney.example" style="color: var(--text); text-decoration: underline;">hoops@tourney.example</a>
     </footer>
+  </div>
+
+  <script>
+    // --- Tabs (accessible) ---
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    function activateTab(tab) {
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach(p => p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')));
+      tab.focus();
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (e) => {
+        const i = tabs.indexOf(tab);
+        if (e.key === 'ArrowRight') {
+          e.preventDefault(); activateTab(tabs[(i + 1) % tabs.length]);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault(); activateTab(tabs[(i - 1 + tabs.length) % tabs.length]);
+        } else if (e.key === 'Home') {
+          e.preventDefault(); activateTab(tabs[0]);
+        } else if (e.key === 'End') {
+          e.preventDefault(); activateTab(tabs[tabs.length - 1]);
+        }
+      });
+    });
+
+    // --- Copy link chip ---
+    const chip = document.getElementById('copyLink');
+    chip?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(location.href); chip.textContent = 'Link copied!'; setTimeout(()=> chip.textContent = 'tourney.example/2025', 1200); } catch {}
+    });
+
+    // --- Footer year ---
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // --- Schedule filters ---
+    const search = document.getElementById('search');
+    const dayFilter = document.getElementById('dayFilter');
+    const courtFilter = document.getElementById('courtFilter');
+    const rows = Array.from(document.querySelectorAll('#scheduleTable tbody tr'));
+
+    function applyFilters() {
+      const q = (search.value || '').toLowerCase();
+      const day = dayFilter.value;
+      const court = courtFilter.value;
+      rows.forEach(tr => {
+        const cells = tr.children;
+        const matchesQuery = !q || tr.textContent.toLowerCase().includes(q);
+        const matchesDay = !day || cells[0].textContent === day;
+        const matchesCourt = !court || cells[3].textContent === court;
+        tr.style.display = (matchesQuery && matchesDay && matchesCourt) ? '' : 'none';
+      });
+    }
+    [search, dayFilter, courtFilter].forEach(el => el.addEventListener('input', applyFilters));
+
+    // --- Simple data API hooks (optional) ---
+    // You can replace the static rows/cards by fetching JSON and rendering here.
+    // Example structure (for your backend or a static JSON file):
+    // const games = [{ day:"Friday", time:"6:00 PM", a:"Mutts & Fulls", b:"BBB", court:"Court A", round:"Round of 16", status:"Scheduled" }, ...]
+    // const teams = [{ name:"Mutts & Fulls", seed:1, captain:"Jordan", colors:"Black/Gold", region:"West" }, ...]
+  </script>
 </body>
 </html>
